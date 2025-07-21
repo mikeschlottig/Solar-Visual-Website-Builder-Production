@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./services
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./services:/app
+    environment:
+      - PYTHONPATH=/app
+      - ENVIRONMENT=development
+
+  logging-server:
+    build:
+      context: ./logging-server
+      dockerfile: Dockerfile.logging
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./logging-server:/app
+      - ./logs:/app/logs
+
+volumes:
+  logs:
